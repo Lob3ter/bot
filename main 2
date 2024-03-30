@@ -1,0 +1,65 @@
+import discord
+from discord.ext import commands
+from Token import TOKEN
+from Facts import FACTS
+import random
+import os
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='/', intents=intents)
+
+время_разложения = {
+    "пищевые отходы": "до 1 месяца",
+    "газетная бумага": "до 1 года",
+    "картонные коробки": "до 1 года",
+    "бумага": "2 года",
+    "деревянные доски": "до 10 лет",
+    "железная арматура": "до 10 лет",
+    "железные банки": "до 10 лет",
+    "старая обувь": "до 10 лет",
+    "обломки кирпича, бетона": "до 100 лет",
+    "автоаккумуляторы": "до 100 лет",
+    "фольга": "до 100 лет",
+    "жестяная банка": "до 90 лет",
+    "электрические батарейки": "до 100 лет",
+    "резиновые покрышки": "более 100 лет",
+    "пластиковые бутылки": "более 100 лет",
+    "полиэтиленовая пленка": "200 лет",
+    "алюминиевые банки": "500 лет",
+    "стекло": "более 1000 лет"
+}
+
+@bot.event
+async def on_ready():
+    print(f'{bot.user} has connected to Discord!')
+
+@bot.command()
+async def decomposition(ctx, предмет):
+    предмет = предмет.lower()
+    if предмет in время_разложения:
+        await ctx.send(f"Вид отходов '{предмет}' разлагается примерно {время_разложения[предмет]}.")
+    else:
+        await ctx.send("Информация о времени разложения для данного вида отходов не найдена. Посмотреть все виды отходов - /список")
+
+@bot.command()
+async def список(ctx):
+    материалы = ", ".join(время_разложения.keys())
+    await ctx.send(f"Все виды отходов: {материалы}")
+
+@bot.command()
+async def fact(ctx):
+    a = random.choice(FACTS)
+    await ctx.send(a)
+
+@bot.command()
+async def ideas(ctx):
+    b = random.choice(os.listdir("images"))
+    with open(f"images/{b}", "rb") as c:
+        pic = discord.File(c)
+    await ctx.send(file = pic)
+    
+
+
+
+bot.run(TOKEN)
